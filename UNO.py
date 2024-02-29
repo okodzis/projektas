@@ -5,6 +5,7 @@ import startgame
 
 img_basic_address = './img/'
 
+
 class Popup(pygame.sprite.Sprite):
     def __init__(self, name, position):
         pygame.sprite.Sprite.__init__(self)
@@ -18,6 +19,7 @@ class Popup(pygame.sprite.Sprite):
         return self.name
     def get_rect(self):
         return self.rect
+    
 
 class UNOGame():
     def __init__(self):
@@ -43,7 +45,7 @@ class UNOGame():
 
     def set_players(self):
         pygame.init()
-        self.background = pygame.image.load('./img/default.png')
+        self.background = pygame.image.load('./img/background.png')
         self.screen.blit(self.background, (-100, -70))
         selected = 1
         menu = True
@@ -114,7 +116,7 @@ class UNOGame():
             pygame.display.update()
 
     def set_difficulty(self):
-        self.background = pygame.image.load('./img/default.png')
+        self.background = pygame.image.load('./img/background.png')
         self.screen.blit(self.background, (-100, -70))
         selected = 1
         menu = True
@@ -200,7 +202,7 @@ class UNOGame():
                             selected = selected+1
                     if event.key == K_RETURN:
                         if selected <= 1:
-                            self.background = pygame.image.load('./img/default.png')
+                            self.background = pygame.image.load('./img/background.png')
                             self.screen.blit(self.background, (-30, -30))
                             game = startgame.game(self.playernum, self.difficulty)
                             game.startgame()

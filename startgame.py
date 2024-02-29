@@ -10,7 +10,7 @@ class game():
     def __init__(self, playernum, difficulty):
         self.playernum = playernum
         self.difficulty = difficulty
-        self.background = pygame.image.load('./img/default.png')
+        self.background = pygame.image.load('./img/background.png')
         self.screen = pygame.display.set_mode((800, 700))
         self.screen.blit(self.background, (-100, -70))
         self.color = {1:'RED', 2:'YELLOW', 3:'GREEN', 4:'BLUE', 5:'BLACK'}
@@ -179,15 +179,15 @@ class game():
             self.screen.blit(user_text, (165, 420))
 
         elif now_turn == 1:
-            com1_text = self.text_format("COM1", 'Berlin Sans FB', 30, (0,0,0))
+            com1_text = self.text_format("PLAYER1", 'Berlin Sans FB', 30, (0,0,0))
             self.screen.blit(com1_text, (235, 18))
 
         elif now_turn == 2:
-            com2_text = self.text_format("COM2", 'Berlin Sans FB', 30, (0,0,0))
+            com2_text = self.text_format("PLAYER2", 'Berlin Sans FB', 30, (0,0,0))
             self.screen.blit(com2_text, (45, 100))
 
         elif now_turn == 3:
-            com3_text = self.text_format("COM3", 'Berlin Sans FB', 30, (0,0,0))
+            com3_text = self.text_format("PLAYER3", 'Berlin Sans FB', 30, (0,0,0))
             self.screen.blit(com3_text, (675, 100))
         temp = self.get_next_player(now_turn)
         return temp
@@ -205,13 +205,13 @@ class game():
             user_text = self.text_format("ME", 'Berlin Sans FB', 30, (255,242,0))
             self.screen.blit(user_text, (165, 420))
         elif now_turn == 1:
-            com1_text = self.text_format("COM1", 'Berlin Sans FB', 30, (255,242,0))
+            com1_text = self.text_format("PLAYER1", 'Berlin Sans FB', 30, (255,242,0))
             self.screen.blit(com1_text, (235, 18))
         elif now_turn == 2:
-            com2_text = self.text_format("COM2", 'Berlin Sans FB', 30, (255,242,0))
+            com2_text = self.text_format("PLAYER2", 'Berlin Sans FB', 30, (255,242,0))
             self.screen.blit(com2_text, (45, 100))
         else:
-            com3_text = self.text_format("COM3", 'Berlin Sans FB', 30, (255,242,0))
+            com3_text = self.text_format("PLAYER3", 'Berlin Sans FB', 30, (255,242,0))
             self.screen.blit(com3_text, (675, 100))
         pygame.display.update()
     
@@ -222,15 +222,15 @@ class game():
         self.com1_group.draw(self.screen)
         if self.playernum >= 3:
             self.com2_group.draw(self.screen)
-            com2_text = self.text_format("COM2", 'Berlin Sans FB', 30, (0,0,0))
+            com2_text = self.text_format("PLAYER2", 'Berlin Sans FB', 30, (0,0,0))
             self.screen.blit(com2_text, (45, 100))
         if self.playernum == 4:
             self.com3_group.draw(self.screen)
-            com3_text = self.text_format("COM3", 'Berlin Sans FB', 30, (0,0,0))
+            com3_text = self.text_format("PLAYER3", 'Berlin Sans FB', 30, (0,0,0))
             self.screen.blit(com3_text, (675, 100))
         user_text = self.text_format("ME", 'Berlin Sans FB', 30, (0,0,0))
         self.screen.blit(user_text, (165, 420))
-        com1_text = self.text_format("COM1", 'Berlin Sans FB', 30, (0,0,0))
+        com1_text = self.text_format("PLAYER1", 'Berlin Sans FB', 30, (0,0,0))
         self.screen.blit(com1_text, (235, 18))
         self.waste_group.draw(self.screen)
 
@@ -327,12 +327,12 @@ class game():
         self.printwindow()
 
     def pick_color(self):
-        color_popup = popup.Popup('pickcolor', (400, 300))
+        color_popup = uno.Popup('pickcolor', (400, 300))
         popup_group = pygame.sprite.RenderPlain(color_popup)
-        red = popup.Popup('RED', (306, 320))
-        yellow = popup.Popup('YELLOW', (368, 320))
-        green = popup.Popup('GREEN', (432, 320))
-        blue = popup.Popup('BLUE', (494, 320))
+        red = uno.Popup('RED', (306, 320))
+        yellow = uno.Popup('YELLOW', (368, 320))
+        green = uno.Popup('GREEN', (432, 320))
+        blue = uno.Popup('BLUE', (494, 320))
         colors = [red, yellow, green, blue]
         color_group = pygame.sprite.RenderPlain(*colors)
 
