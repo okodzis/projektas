@@ -2,16 +2,18 @@ import sys
 import random
 import pygame
 from pygame.locals import *
-import uno_gui
+import loadcard
+from UNO import *
 import AI
 
 class game():
-    def __init__(self, playernum):
+    def __init__(self, playernum, difficulty):
         self.playernum = playernum
-        self.background = pygame.image.load('./image/default.png')
+        self.difficulty = difficulty
+        self.background = pygame.image.load('./img/default.png')
         self.screen = pygame.display.set_mode((800, 700))
-        self.screen.blit(self.background, (-100, -7))
-        self.color = {1: 'RED', 2: 'YELLOW', 3: 'GREEN', 4: 'BLUE',5: 'BLACK'}
+        self.screen.blit(self.background, (-100, -70))
+        self.color = {1:'RED', 2:'YELLOW', 3:'GREEN', 4:'BLUE', 5:'BLACK'}
         self.skill = {11:'_SKILL_0', 12:'_SKILL_1', 13:'_SKILL_2', 14:'_SKILL_3', 15:'_SKILL_4'}
         self.card_deck = []
         self.player = [[0] for i in range (0, self.playernum)]
@@ -24,7 +26,7 @@ class game():
         newFont = pygame.font.SysFont(textFont, textSize)
         newText = newFont.render(message, K_0, textColor)
         return newText
-    
+
     def set_deck(self):
         for color_idx in range(1,5):
             card = self.color[color_idx]
@@ -42,7 +44,6 @@ class game():
                 while iterate != 2:
                     self.card_deck.append(now_card)
                     iterate += 1
-            
         card = 'BLACK'
         for card_number in range(14, 16):
             now_card = card + self.skill[card_number]
@@ -50,7 +51,7 @@ class game():
             while iterate != 4:
                 self.card_deck.append(now_card)
                 iterate += 1
-            random.shuffle(self.card_deck)
+        random.shuffle(self.card_deck)
 
     def set_window(self):
         self.set_deck()
@@ -74,38 +75,43 @@ class game():
             if i == 0:
                 user_card = []
                 for item in player_deck:
-                    cards = loadcard.card(item, (400, 300))
+                    cards = loadcard.Card(item, (400, 300))
                     user_card.append(cards)
             elif i == 1:
-                self.bot1_card = []
+                self.com1_card = []
                 for item in player_deck:
                     cards = loadcard.Card('BACK', (400, 300))
                     cards.rotation(180)
-                    self.bot1_card.append(cards)
+                    self.com1_card.append(cards)
             elif i == 2:
-                self.bot2_card = []
+                self.com2_card = []
                 for item in player_deck:
                     cards = loadcard.Card('BACK', (400, 300))
                     cards.rotation(270)
-                    self.bot2_card.append(cards)
+                    self.com2_card.append(cards)
             else:
-                self.bot3_card = []
+                self.com3_card = []
                 for item in player_deck:
                     cards = loadcard.Card('BACK', (400, 300))
                     cards.rotation(90)
-                    self.bot3_card.append(cards)
+                    self.com3_card.append(cards)
         setting = True
-        settinguser = 1; settingbot1 = 1; settingbot3 =1; settingbot2 =1
+        settinguser = 1; settingcom1 = 1; settingcom3 = 1; settingcom2 = 1
+        if self.playernum == 3:
+            settingcom3 = 0
+        if self.playernum == 2:
+            settingcom3 = 0
+            settingcom2 = 0
 
         while setting:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-
+            
             i = 0
             temp_list = []
-
+            
             for item in user_card:
                 item.update((200+70*i, 500))
                 temp_list.append(item)
@@ -119,44 +125,44 @@ class game():
             i = 0
             temp_list = []
             setting = True
-            # for item in self.bot1_card_card:
-            #     item.update((270+40*i, 100))
-            #     temp_list.append(item)
-            #     i +=1
-            # self.bot1_group = pygame.sprite.RenderPlain(*temp_list)
-            # self.lastcard1 = temp_list[-1].getposition()
-            # if self.lastcard1 == (270+40*(len(temp_list)-1), 100):
-            #     settingbot1 = 0
+            for item in self.com1_card:
+                item.update((270+40*i, 100))
+                temp_list.append(item)
+                i +=1
+            self.com1_group = pygame.sprite.RenderPlain(*temp_list)
+            self.lastcard1 = temp_list[-1].getposition()
+            if self.lastcard1 == (270+40*(len(temp_list)-1), 100):
+                settingcom1 = 0
 
 
-            # if self.playernum >= 3:
-            #     i = 0
-            #     temp_list = []
-            #     setting = True
-            #     for item in self.bot2_card:
-            #         item.update((80, 170+40*i))
-            #         temp_list.append(item)
-            #         i +=1
-            #     self.bot2_group = pygame.sprite.RenderPlain(*temp_list)
-            #     self.lastcard2 = temp_list[-1].getposition()
-            #     if self.lastcard2 == (80, 170+40*(len(temp_list)-1)):
-            #         settingbot2 = 0
+            if self.playernum >= 3:
+                i = 0
+                temp_list = []
+                setting = True
+                for item in self.com2_card:
+                    item.update((80, 170+40*i))
+                    temp_list.append(item)
+                    i +=1
+                self.com2_group = pygame.sprite.RenderPlain(*temp_list)
+                self.lastcard2 = temp_list[-1].getposition()
+                if self.lastcard2 == (80, 170+40*(len(temp_list)-1)):
+                    settingcom2 = 0
 
             if self.playernum == 4:
                 i = 0
                 temp_list = []
                 setting = True
-                for item in self.bot3_card:
+                for item in self.com3_card:
                     item.update((710, 170+40*i))
                     temp_list.append(item)
                     i +=1
-                self.bot3_group = pygame.sprite.RenderPlain(*temp_list)
+                self.com3_group = pygame.sprite.RenderPlain(*temp_list)
                 self.lastcard3 = temp_list[-1].getposition()
                 if self.lastcard3 == (710, 170+40*(len(temp_list)-1)):
-                    settingbot3 = 0
+                    settingcom3 = 0
             
             
-            if settinguser == 0 and settingbot1 == 0 and settingbot2 == 0 and settingbot3 == 0:
+            if settinguser == 0 and settingcom1 == 0 and settingcom2 == 0 and settingcom3 == 0:
                 setting = False
 
             pygame.mixer.pre_init(44100, -16, 1, 512)
@@ -169,20 +175,20 @@ class game():
 
     def next_turn(self, now_turn):
         if now_turn == 0:
-            user_text = self.text_format("AŠ", 'Arial', 30, (0,0,0))
+            user_text = self.text_format("ME", 'Berlin Sans FB', 30, (0,0,0))
             self.screen.blit(user_text, (165, 420))
 
         elif now_turn == 1:
-            bot1_text = self.text_format("BOT1", 'Arial', 30, (0,0,0))
-            self.screen.blit(bot1_text, (235, 18))
+            com1_text = self.text_format("COM1", 'Berlin Sans FB', 30, (0,0,0))
+            self.screen.blit(com1_text, (235, 18))
 
         elif now_turn == 2:
-            bot2_text = self.text_format("BOT2", 'Arial', 30, (0,0,0))
-            self.screen.blit(bot2_text, (45, 100))
+            com2_text = self.text_format("COM2", 'Berlin Sans FB', 30, (0,0,0))
+            self.screen.blit(com2_text, (45, 100))
 
         elif now_turn == 3:
-            bot3_text = self.text_format("BOT3", 'Arial', 30, (0,0,0))
-            self.screen.blit(bot3_text, (675, 100))
+            com3_text = self.text_format("COM3", 'Berlin Sans FB', 30, (0,0,0))
+            self.screen.blit(com3_text, (675, 100))
         temp = self.get_next_player(now_turn)
         return temp
         
@@ -196,37 +202,37 @@ class game():
 
     def select_player(self, now_turn):
         if now_turn == 0:
-            user_text = self.text_format("AŠ", 'Arial', 30, (255,242,0))
+            user_text = self.text_format("ME", 'Berlin Sans FB', 30, (255,242,0))
             self.screen.blit(user_text, (165, 420))
         elif now_turn == 1:
-            bot1_text = self.text_format("BOT1", 'Arial', 30, (255,242,0))
-            self.screen.blit(bot1_text, (235, 18))
+            com1_text = self.text_format("COM1", 'Berlin Sans FB', 30, (255,242,0))
+            self.screen.blit(com1_text, (235, 18))
         elif now_turn == 2:
-            bot2_text = self.text_format("BOT2", 'Arial', 30, (255,242,0))
-            self.screen.blit(bot2_text, (45, 100))
+            com2_text = self.text_format("COM2", 'Berlin Sans FB', 30, (255,242,0))
+            self.screen.blit(com2_text, (45, 100))
         else:
-            bot3_text = self.text_format("BOT3", 'Arial', 30, (255,242,0))
-            self.screen.blit(bot3_text, (675, 100))
+            com3_text = self.text_format("COM3", 'Berlin Sans FB', 30, (255,242,0))
+            self.screen.blit(com3_text, (675, 100))
         pygame.display.update()
-
+    
     def printwindow(self):
         self.screen.blit(self.background, (-100, -70))
         self.deck_group.draw(self.screen)
         self.user_group.draw(self.screen)   
-        self.bot1_group.draw(self.screen)
-        # if self.playernum >= 3:
-        #     self.bot2_group.draw(self.screen)
-        #     bot2_text = self.text_format("BOT2", 'Berlin Sans FB', 30, (0,0,0))
-        #     self.screen.blit(bot2_text, (45, 100))
+        self.com1_group.draw(self.screen)
+        if self.playernum >= 3:
+            self.com2_group.draw(self.screen)
+            com2_text = self.text_format("COM2", 'Berlin Sans FB', 30, (0,0,0))
+            self.screen.blit(com2_text, (45, 100))
         if self.playernum == 4:
-            self.bot3_group.draw(self.screen)
-            bot3_text = self.text_format("BOT3", 'Arial', 30, (0,0,0))
-            self.screen.blit(bot3_text, (675, 100))
-        user_text = self.text_format("AŠ", 'Arial', 30, (0,0,0))
+            self.com3_group.draw(self.screen)
+            com3_text = self.text_format("COM3", 'Berlin Sans FB', 30, (0,0,0))
+            self.screen.blit(com3_text, (675, 100))
+        user_text = self.text_format("ME", 'Berlin Sans FB', 30, (0,0,0))
         self.screen.blit(user_text, (165, 420))
-        bot1_text = self.text_format("BOT1", 'Arial', 30, (0,0,0))
-        self.screen.blit(bot1_text, (235, 18))
-        self.waste_group.draw(self.screen)   
+        com1_text = self.text_format("COM1", 'Berlin Sans FB', 30, (0,0,0))
+        self.screen.blit(com1_text, (235, 18))
+        self.waste_group.draw(self.screen)
 
     def check_card(self, sprite):
         if len(self.waste_card) == 0:
@@ -269,8 +275,8 @@ class game():
             elif name[2] == '3':
                 pygame.mixer.pre_init(44100, -16, 1, 512)
                 pygame.init()
-            #     select = pygame.mixer.Sound('./sound/select.wav')
-            #     select.play()
+                select = pygame.mixer.Sound('./sound/select.wav')
+                select.play()
                 if self.now_turn == 0:
                     self.pick_color()
                 elif self.now_turn == 1:
@@ -285,9 +291,9 @@ class game():
             elif name[2] == '4':
                 pygame.mixer.pre_init(44100, -16, 1, 512)
                 pygame.init()
-            #     select = pygame.mixer.Sound('./sound/select.wav')
-            #     select.play()
-            #     self.give_card(4)
+                select = pygame.mixer.Sound('./sound/select.wav')
+                select.play()
+                self.give_card(4)
                 if self.now_turn == 0:
                     self.pick_color()
                 elif self.now_turn == 1:
@@ -300,7 +306,7 @@ class game():
                     pygame.time.wait(500)
                     self.most_num_color(self.player[3])
         return True
-            
+
     def most_num_color(self, card_deck):
         r = 0; y = 0; g = 0; b = 0;
         for item in card_deck:
@@ -331,7 +337,6 @@ class game():
         color_group = pygame.sprite.RenderPlain(*colors)
 
         loop = True
-
         while loop:
             popup_group.draw(self.screen)
             color_group.draw(self.screen)
@@ -357,23 +362,23 @@ class game():
         for i in range(0, card_num):
             self.get_from_deck(dest_player)
 
-    def restart(self, win, lose):
+    def restart(self):
         pygame.mixer.pre_init(44100, -16, 1, 512)
         pygame.init()
-        # win = pygame.mixer.Sound('./sound/win.wav')
-        # lose = pygame.mixer.Sound('./sound/lose.wav')
+        win = pygame.mixer.Sound('./sound/win.wav')
+        lose = pygame.mixer.Sound('./sound/lose.wav')
         pygame.draw.rect(self.screen, (255, 51, 0), pygame.Rect(200, 200, 400, 200))
         pygame.draw.rect(self.screen, (255, 180, 0), pygame.Rect(210, 210, 380, 180))
 
         if len(self.user_group) == 0:
             win.play()
-            close_text = self.text_format("TU LAIMĖJAI!", 'Arial', 80, (255,51,0))
-            press_text = self.text_format("Paspausk SPACE, kad žaisti iš naujo", 'Arial', 35, (255,51,0))
+            close_text = self.text_format("YOU WIN!", 'Berlin Sans FB', 80, (255,51,0))
+            press_text = self.text_format("Press SPACE to REPLAY", 'Berlin Sans FB', 35, (255,51,0))
             self.screen.blit(close_text, (230, 220))
         else:
             lose.play()
-            close_text = self.text_format("TU PRALAIMĖJAI!", 'Arial', 80, (255,51,0))
-            press_text = self.text_format("Paspausk SPACE, kad žaisti iš naujo", 'Arial', 35, (255,51,0))
+            close_text = self.text_format("YOU LOSE!", 'Berlin Sans FB', 80, (255,51,0))
+            press_text = self.text_format("Press SPACE to REPLAY", 'Berlin Sans FB', 35, (255,51,0))
             self.screen.blit(close_text, (212, 220))
         
         self.screen.blit(press_text, (228, 330))
@@ -409,16 +414,16 @@ class game():
                 if len(self.player[1]) == 0 or len(self.player[2]) == 0 or len(self.player[2]) == 0:
                     self.restart()
                     return
-            # elif self.playernum == 3:
-            #     if len(self.player[1]) == 0 or len(self.player[2]) == 0:
-            #         self.restart()
-            #         return
-            # elif self.playernum == 2:
-            #     if len(self.player[1]) == 0:
-            #         self.restart()
-            #         return
-            # if len(self.card_deck) == 0:
-            #     self.set_deck()
+            elif self.playernum == 3:
+                if len(self.player[1]) == 0 or len(self.player[2]) == 0:
+                    self.restart()
+                    return
+            elif self.playernum == 2:
+                if len(self.player[1]) == 0:
+                    self.restart()
+                    return
+            if len(self.card_deck) == 0:
+                self.set_deck()
 
             self.select_player(self.now_turn)
             if self.now_turn == 1:
@@ -427,23 +432,23 @@ class game():
                 ai = AI.AI(2, self.player[1], self.waste_card)
                 if self.difficulty == 1:
                     temp = ai.basicplay()
-                # elif self.difficulty == 2:
-                #     next = self.get_next_player(self.now_turn)
-                #     if next == 0 : next_ = self.user_group
-                #     else : next_ = self.player[next]
-                #     temp = ai.advancedplay(next_)
-                # if temp == 0 or temp == None:
-                #     self.get_from_deck(1)
-                #     self.printwindow()
-                #     self.now_turn = self.next_turn(self.now_turn)
-                #     pygame.display.update()
+                elif self.difficulty == 2:
+                    next = self.get_next_player(self.now_turn)
+                    if next == 0 : next_ = self.user_group
+                    else : next_ = self.player[next]
+                    temp = ai.advancedplay(next_)
+                if temp == 0 or temp == None:
+                    self.get_from_deck(1)
+                    self.printwindow()
+                    self.now_turn = self.next_turn(self.now_turn)
+                    pygame.display.update()
                 else:
                     pygame.mixer.pre_init(44100, -16, 1, 512)
                     pygame.init()
-                    # card = pygame.mixer.Sound('./sound/deal_card.wav')
-                    for sprite in self.bot1_group:
+                    card = pygame.mixer.Sound('./sound/deal_card.wav')
+                    for sprite in self.com1_group:
                         if sprite.getposition() == self.lastcard1:
-                            self.bot1_group.remove(sprite)
+                            self.com1_group.remove(sprite)
                     self.player[1].remove(temp)
                     self.set_lastcard(self.lastcard1, (0,0))
                     card.play()
@@ -671,6 +676,4 @@ class game():
         self.waste_group.add(sprite)
         self.waste_card.append(sprite.get_name())
         self.set_lastcard(self.lastcard0, sprite.getposition())
-        self.printwindow()                
-
-
+        self.printwindow()
