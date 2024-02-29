@@ -2,7 +2,6 @@ import pygame
 import sys
 import tkinter as tk
 from pygame.locals import *
-from tkinter import messagebox
 from uno_game import Deck, Hand, Card, choose_first, win_check, single_card_check
 
 img_basic_address = './img/'
@@ -25,7 +24,7 @@ class UNOgame():
     def __init__(self):
         pygame.init()
         self.background = pygame.image.load(img_basic_address+'background.png')
-        self.screen_dimensions = pygame.display.set_mode((900, 700))
+        self.screen_dimensions = (900, 700)
         self.background_Color = (0,66,0)
         self.playernum = 4
         self.font = 'Arial'
@@ -40,6 +39,76 @@ class UNOgame():
         newFont = pygame.font.SysFont(textFont, textSize)
         newText = newFont.render(message, K_0, textColor)
         return newText
+
+    def main_menu(self):
+        menu = True
+        selected = 1
+        while menu:
+            pygame.mixer.pre_init(44100, -16, 1, 512)
+            pygame.init()
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == KEYDOWN:
+                    if event.key == K_UP:
+                        if selected <=1:
+                            selected = 1
+                        else:
+                            selected = selected-1
+                    elif event.key == K_DOWN:
+                        if selected >=4:
+                            selected = 4
+                        else:
+                            selected = selected+1
+                    if event.key == K_RETURN:
+                        if selected <= 1:
+                            self.background = pygame.image.load('./img/default.png')
+                            self.screen.blit(self.background, (-30, -30))
+                            game = startgame.game(self.playernum, self.difficulty)
+                            game.startgame()
+                            self.background = pygame.image.load('./img/background.png')
+                            self.screen.blit(self.background, (-30, -30))
+                        if selected == 2:
+                            self.set_players()
+                            self.screen.blit(self.background, (-30, -30))
+                        if selected == 3:
+                            self.set_difficulty()
+                            self.screen.blit(self.background, (-30, -30))
+                        if selected >= 4:
+                            pygame.quit()
+                            sys.exit()
+           
+            if selected == 1:
+                text_start = self.text_format("START", self.font, 50, (255,24,0))
+            else:
+                text_start = self.text_format("START", self.font, 50, (0,0,0))
+            if selected == 2:
+                text_player = self.text_format("PLAYERS SET", self.font, 50, (255,24,0))
+            else:
+                text_player = self.text_format("PLAYERS SET", self.font, 50, (0,0,0))
+            if selected == 3:
+                text_dfficulty = self.text_format("DIFFICULTY SET", self.font, 50, (255,24,0))
+            else:
+                text_dfficulty = self.text_format("DIFFICULTY SET", self.font, 50, (0,0,0))
+            if selected == 4:
+                text_quit = self.text_format("QUIT", self.font, 50, (255,24,0))
+            else:
+                text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
+
+            start_rect = text_start.get_rect()
+            player_rect = text_player.get_rect()
+            difficulty_rect = text_dfficulty.get_rect()
+            quit_rect=text_quit.get_rect()
+
+            self.screen.blit(text_start, (self.screen_width/2+70 - (start_rect[2]/2), 200))
+            self.screen.blit(text_player, (self.screen_width/2+70 - (player_rect[2]/2), 260))
+            self.screen.blit(text_dfficulty, (self.screen_width/2+70 - (difficulty_rect[2]/2), 320))
+            self.screen.blit(text_quit, (self.screen_width/2+70 - (quit_rect[2]/2), 380))
+            pygame.display.update()
+            self.clock.tick(self.FPS)
+            pygame.display.set_caption("UNO!")
+
     
 if __name__ == '__main__':
     uno = UNOgame()
